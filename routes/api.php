@@ -27,6 +27,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('logout', 'Auth\LoginController@logout');
     /* Route::get('get-auth-user', 'Auth\LoginController@getAuthenticatedUser'); */
     Route::resource('comments', 'CommentsController');
+    Route::get('get-comments-by-post-id/{post_id}', 'CommentsController@getCommentsByPostID');
     Route::resource('posts', 'PostsController');
     Route::resource('users', 'UsersController');
 });

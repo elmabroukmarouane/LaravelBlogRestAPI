@@ -72,6 +72,21 @@ class CommentsController extends Controller
         //
     }
 
+    
+    /**
+     * Get comments by post ID.
+     *
+     * @param  int  $post_id
+     * @return \Illuminate\Http\Response
+     */
+    public function getCommentsByPostID($post_id)
+    {
+        $comments = Comment::where('post_id', '=', $post_id)->with('user')->with('post')->get();
+        return response()->json([
+            'comments'    => $comments,
+        ], 200);
+    }
+
     /**
      * Show the form for editing the specified resource.
      *

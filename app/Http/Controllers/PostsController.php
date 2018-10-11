@@ -62,7 +62,7 @@ class PostsController extends Controller
         $post = Post::where('id', '=', $post_add->id)->with('user')->with('comments')->first();
         return response()->json([
             'post' => $post,
-            'msg' => 'Comment added successfully !'
+            'msg' => 'Post added successfully !'
         ], 200);
     }
 
@@ -98,12 +98,25 @@ class PostsController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  Post $post
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Post $post)
     {
-        //
+        $post->title = $request->title;
+        $post->content = $request->content;
+        $result_post = $post->saveOrFail();
+        if($result_post){
+            $post_json = Post::where('id', '=', $post->id)->with('user')->with('comments')->first();
+            return response()->json([
+                'post' => $post_json,
+                'msg' => 'Post updated successfully !'
+            ], 200);
+        }else{
+            return response()->json([
+                'msg' => 'Something went wrong. Failed action !'
+            ], 500);
+        }
     }
 
     /**

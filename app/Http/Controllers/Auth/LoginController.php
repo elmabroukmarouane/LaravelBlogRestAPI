@@ -8,6 +8,7 @@
     use Illuminate\Support\Facades\Validator;
     use Faker\Factory as Faker;
     use JWTAuth;
+    use Datetime;
     use App\User;
     use Tymon\JWTAuth\Exceptions\JWTException;
 
@@ -68,14 +69,14 @@
             if($validator->fails()){
                 return response()->json($validator->errors()->toJson(), 400);
             }
-            $datetime = new \Datetime($request->get('birthdate'));
+            $datetime = new Datetime($request->get('birthdate'));
             $faker = Faker::create();
             $user = User::create([
                 'name' => $request->get('name'),
                 'birthdate' => $datetime->format('Y-m-d'),
                 'email' => $request->get('email'),
                 'password' => Hash::make($request->get('password')),
-                'user_role' => 'super_admin',
+                'user_role' => 'user',
                 'image' => $faker->imageUrl($width = 640, $height = 480)
             ]);
             $token = JWTAuth::fromUser($user);
