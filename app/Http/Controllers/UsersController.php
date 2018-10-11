@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use App\User;
 
-class UserController extends Controller
+class UsersController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,6 +19,13 @@ class UserController extends Controller
         $users->filter->posts;
         $users->filter->comments;
         //return UserResource::collection($users);
+        return response()->json([
+            'users'    => $users,
+        ], 200);
+    }
+    
+    public function getUsersList() {
+        $users = User::select('id', 'name')->orderBy('updated_at', 'desc')->get();
         return response()->json([
             'users'    => $users,
         ], 200);

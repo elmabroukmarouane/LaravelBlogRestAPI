@@ -19,7 +19,8 @@ class UsersTableSeeder extends Seeder
             'birthdate' => $faker->date('Y-m-d', '1999-01-01'),
             'email' => $faker->email,
             'password' => bcrypt('123456'),
-            'user_role' => 'super_admin'
+            'user_role' => 'super_admin',
+            'image' => $faker->imageUrl($width = 640, $height = 480)
         ]);
         foreach(range(1,10) as $index)
         {
@@ -28,7 +29,8 @@ class UsersTableSeeder extends Seeder
                 'birthdate' => $faker->date('Y-m-d', '1999-01-01'),
                 'email' => $faker->email,
                 'password' => bcrypt('123456'),
-                'user_role' => 'user'
+                'user_role' => 'user',
+                'image' => $faker->imageUrl($width = 640, $height = 480)
             ]);
         }
     }

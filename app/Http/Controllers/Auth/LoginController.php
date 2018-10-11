@@ -6,6 +6,7 @@
     use App\Http\Controllers\Controller;
     use Illuminate\Support\Facades\Hash;
     use Illuminate\Support\Facades\Validator;
+    use Faker\Factory as Faker;
     use JWTAuth;
     use App\User;
     use Tymon\JWTAuth\Exceptions\JWTException;
@@ -22,7 +23,19 @@
             } catch (JWTException $e) {
                 return response()->json(['error' => 'could_not_create_token'], 500);
             }
-            return response()->json(compact('token'));
+            $user = User::where('email', '=', $request->only('email'))->first();
+            $user_array = array(
+                'id' => $user->id,
+                'name' => $user->name,
+                'birthdate' => $user->birthdate,
+                'email' => $user->email,
+                'user_role' => $user->user_role,
+                'image' => $user->image,
+                'token' => $token
+            );
+            return response()->json([
+                'user' => $user_array
+            ], 200);
         } 
 
         public function logout(Request $request)
@@ -48,24 +61,39 @@
         {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
+                'birthdate' => 'required|date',
                 'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|min:6|confirmed',
+                'password' => 'required|string|min:6',
             ]);
             if($validator->fails()){
                 return response()->json($validator->errors()->toJson(), 400);
             }
+            $datetime = new \Datetime($request->get('birthdate'));
+            $faker = Faker::create();
             $user = User::create([
                 'name' => $request->get('name'),
-                'birthdate' => $request->get('birthdate'),
+                'birthdate' => $datetime->format('Y-m-d'),
                 'email' => $request->get('email'),
                 'password' => Hash::make($request->get('password')),
-                'user_role' => 'super_admin'
+                'user_role' => 'super_admin',
+                'image' => $faker->imageUrl($width = 640, $height = 480)
             ]);
             $token = JWTAuth::fromUser($user);
-            return response()->json(compact('user','token'),201);
+            $user_array = array(
+                'id' => $user->id,
+                'name' => $user->name,
+                'birthdate' => $user->birthdate,
+                'email' => $user->email,
+                'user_role' => $user->user_role,
+                'image' => $user->image,
+                'token' => $token
+            );
+            return response()->json([
+                'user' => $user_array
+            ], 201);
         }
 
-        public function getAuthenticatedUser()
+        /* public function getAuthenticatedUser()
         {
             try {
                 if (! $user = JWTAuth::parseToken()->authenticate()) {
@@ -79,5 +107,5 @@
                 return response()->json(['token_absent'], $e->getStatusCode());
             }
             return response()->json(compact('user'));
-        }
+        } */
     }

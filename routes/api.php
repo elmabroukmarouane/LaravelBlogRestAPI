@@ -22,25 +22,11 @@ Route::group(['namespace' => 'Auth'], function() {
     Route::post('register', 'LoginController@register');
     Route::post('login', 'LoginController@login');
 }); 
-Route::get('posts', function () {
-        $posts = Post::orderBy('updated_at', 'desc')->get();
-        $posts->filter->user;
-        $posts->filter->comments;
-        //return PostResource::collection($posts);
-        return response()->json([
-            'posts'    => $posts,
-        ], 200);
-    });
+Route::get('get-users-list', 'UsersController@getUsersList');
 Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('logout', 'Auth\LoginController@logout');
-    Route::get('get-auth-user', 'Auth\LoginController@getAuthenticatedUser');
-    Route::get('comments', function () {
-        $comments = Comment::orderBy('updated_at', 'desc')->get();
-        $comments->filter->user;
-        $comments->filter->post;
-        //return PostResource::collection($comments);
-        return response()->json([
-            'comments'    => $comments,
-        ], 200);
-    });
+    /* Route::get('get-auth-user', 'Auth\LoginController@getAuthenticatedUser'); */
+    Route::resource('comments', 'CommentsController');
+    Route::resource('posts', 'PostsController');
+    Route::resource('users', 'UsersController');
 });
